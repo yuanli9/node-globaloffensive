@@ -28,6 +28,9 @@ function GlobalOffensive(steam) {
 	this._isInCSGO = false;
 
 	this._steam.on('receivedFromGC', (appid, msgType, payload) => {
+		console.log("1-appId " + appid)
+		console.log("2-msgType " + msgType)
+		console.log("3-payload " + JSON.stringify(payload))
 		if (appid != STEAM_APPID) {
 			return; // we don't care
 		}
@@ -54,6 +57,7 @@ function GlobalOffensive(steam) {
 	});
 
 	this._steam.on('appLaunched', (appid) => {
+		console.log("appLaunched ", appid)
 		if (this._isInCSGO) {
 			return; // we don't care if it was launched again
 		}
@@ -100,6 +104,7 @@ function GlobalOffensive(steam) {
 }
 
 GlobalOffensive.prototype._connect = function() {
+	console.log("connect start");
 	if (!this._isInCSGO || this._helloTimer) {
 		this.emit('debug', "Not trying to connect due to " + (!this._isInCSGO ? "not in CS:GO" : "has helloTimer"));
 		return; // We're not in CS:GO or we're already trying to connect
@@ -293,6 +298,13 @@ GlobalOffensive.prototype.nameItem = function(nameTagId, itemId, name) {
 	buffer.writeByte(0x00); // unknown
 	buffer.writeCString(name);
 	this._send(Language.NameItem, null, buffer);
+};
+
+GlobalOffensive.prototype.unlockCrate = function(boxId, keyId) {
+	let buffer = new ByteBuffer(18 + Buffer.byteLength(boxId) + Buffer.byteLength(keyId), ByteBuffer.LITTLE_ENDIAN);
+	buffer.writeUint64(boxId);
+	buffer.writeUint64(keyId);
+	this._send(Language.UnlockCrate, null, buffer);
 };
 
 /**

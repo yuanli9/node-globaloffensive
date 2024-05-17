@@ -1,6 +1,6 @@
 {
 	"name": "globaloffensive",
-	"version": "3.1.0",
+	"version": "3.1.1",
 	"description": "Exposes a simple API for interacting with the Counter-Strike: Global Offensive/CS2 game coordinator",
 	"keywords": [
 		"csgo",
@@ -21,10 +21,12 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/DoctorMcKay/node-globaloffensive.git"
+		"url": "https://github.com/yuanli9/node-globaloffensive.git"
 	},
 	"dependencies": {
 		"bytebuffer": "^5.0.1",
+		"cors": "^2.8.5",
+		"express": "^4.19.2",
 		"globaloffensive-sharecode": "^1.1.1",
 		"long": "^5.2.3",
 		"protobufjs": "^7.2.5",
@@ -34,6 +36,7 @@
 		"steam-user": ">=4.2.0"
 	},
 	"devDependencies": {
+		"globaloffensive": "^3.1.0",
 		"protobufjs-cli": "^1.1.2",
 		"steam-user": "^4.26.1"
 	},
