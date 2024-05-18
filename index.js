@@ -6,7 +6,8 @@ const Util = require('util');
 
 const Language = require('./language.js');
 const Protos = require('./protobufs/generated/_load.js');
-
+const StringDecoder = require('string_decoder').StringDecoder;
+const decoder = new StringDecoder('utf8');
 const STEAM_APPID = 730;
 
 module.exports = GlobalOffensive;
@@ -30,12 +31,14 @@ function GlobalOffensive(steam) {
 	this._steam.on('receivedFromGC', (appid, msgType, payload) => {
 		console.log("1-appId " + appid)
 		console.log("2-msgType " + msgType)
-		console.log("3-payload " + JSON.stringify(payload))
+		let isProtobuf = !Buffer.isBuffer(payload);
+		console.log("3-payload ");
+		let newVar = isProtobuf ? JSON.stringify(payload) : ByteBuffer.wrap(payload, ByteBuffer.LITTLE_ENDIAN);
+		console.log(decoder.write(newVar));
 		if (appid != STEAM_APPID) {
 			return; // we don't care
 		}
 
-		let isProtobuf = !Buffer.isBuffer(payload);
 		let handler = null;
 
 		if (this._handlers[msgType]) {

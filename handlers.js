@@ -1,7 +1,8 @@
 const ByteBuffer = require('bytebuffer');
 const Long = require('long');
 const SteamID = require('steamid');
-
+const StringDecoder = require('string_decoder').StringDecoder;
+const decoder = new StringDecoder('utf8');
 const GlobalOffensive = require('./index.js');
 const Language = require('./language.js');
 const Protos = require('./protobufs/generated/_load.js');
@@ -409,3 +410,28 @@ function decodeProto(proto, encoded) {
 		return !val;
 	}
 }
+
+handlers[Language.UnlockCrate] = function(body) {
+	console.log("unlock crate " + body);
+};
+
+handlers[Language.MatchmakingGC2ClientHello] = function(body) {
+	console.log("MatchmakingGC2ClientHello " + body);
+};
+
+handlers[Language.ClientGCRankUpdate] = function(body) {
+	console.log("ClientGCRankUpdate " + body);
+};
+
+
+handlers[Language.GC2ClientGlobalStats] = function(body) {
+	let str = decoder.write(body.buffer);
+	console.log("GC2ClientGlobalStats " + str);
+};
+
+
+
+handlers[Language.UnlockCrateResponse] = function(body) {
+	let str = decoder.write(body.buffer);
+	console.log("UnlockCrateResponse " + str);
+};

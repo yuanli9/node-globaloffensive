@@ -21,6 +21,7 @@ client.on('loggedOn', function(details) {
 });
 
 client.on("playingState", function (blocked, playingApp) {
+	console.log("playingState " + blocked + "  app " + playingApp)
 	if (blocked) {
 		console.log(`Started playing somewhere (blocked: ${blocked}) Awaiting until disconnect`);
 	} else {
@@ -57,12 +58,15 @@ csgo.on('disconnectedFromGC', (reason) => {
 	}
 });
 
-
+csgo.on('debug', (reason) => {
+	console.log(reason)
+});
 const express = require('express');
 const app = express();
 const cors = require('cors');
 const url = require('url');
 const querystring = require('querystring');
+const {response} = require("express");
 
 // 处理跨域中间件
 app.use(cors())
@@ -71,8 +75,41 @@ app.use(express.json());
 // const app = express();
 // 处理application/x-www-form-urlencoded表单格式的中间件
 app.use(express.urlencoded({ extended: false }))
+// okk
+app.get('/okk', (req, res)=>{
+	res.send({
+		status: 200,
+		data: "okk",
+		message: '请求成功'
+	});
+})
 
-// 获取交易链接
+
+app.get('/gameAllServerIps', (req, res)=>{
+	Promise.all([client.getServerList("", 10, function (){
+		console.log("getServerList callback")
+	})]).then(result => {
+		res.send({
+			status: 200,
+			data: result || "failed",
+			message: '请求成功'
+		});
+	});
+
+})
+
+app.get('/gameServerIps', (req, res)=>{
+	Promise.all([client.getServerIPsBySteamID(["76561198417899069"], function (){
+		console.log("getServerList callback")
+	})]).then(result => {
+		res.send({
+			status: 200,
+			data: result || "failed",
+			message: '请求成功'
+		});
+	});
+})
+
 app.get('/csgoStatus', (req, res)=>{
 
 	res.send({
