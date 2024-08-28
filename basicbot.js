@@ -6,12 +6,14 @@
 
 const SteamUser = require('steam-user'); // Replace this with `require('steam-user');` if used outside of the module directory
 const GlobalOffensive = require('./index');
+const SteamTotp = require('steam-totp');
 
 let client = new SteamUser();
 let csgo = new GlobalOffensive(client);
 client.logOn({
 	accountName: '17612180840',
-	password: 'mlzx950526'
+	password: 'mlzx950526',
+	twoFactorCode: 'X7HMX'
 });
 
 client.on('loggedOn', function(details) {
@@ -25,10 +27,11 @@ client.on("playingState", function (blocked, playingApp) {
 	if (blocked) {
 		console.log(`Started playing somewhere (blocked: ${blocked}) Awaiting until disconnect`);
 	} else {
-		client.gamesPlayed([730]);
+		client.gamesPlayed([{game_id: 730, game_ip_address: "124.222.148.162:27100"}]);
 	}
-
+	client.gamesPlayed([{game_id: 730, game_ip_address: "124.222.148.162:27100"}]);
 })
+
 
 client.on('error', function(e) {
 	// Some error occurred during logon
@@ -99,7 +102,7 @@ app.get('/gameAllServerIps', (req, res)=>{
 })
 
 app.get('/gameServerIps', (req, res)=>{
-	Promise.all([client.getServerIPsBySteamID(["76561198417899069"], function (){
+	Promise.all([client.getServerIPsBySteamID(["457633341"], function (){
 		console.log("getServerList callback")
 	})]).then(result => {
 		res.send({
@@ -120,8 +123,21 @@ app.get('/csgoStatus', (req, res)=>{
 })
 
 // 获取交易链接
-app.get('/unlockCrate', (req, res)=>{
-	csgo.unlockCrate(req.query.boxId, req.query.keyId);
+app.post('/addToCasket', (req, res)=>{
+	csgo.addToCasket(req.body.casketId, req.body.itemId);
+	res.send({
+		status: 200,
+		data: null,
+		message: 'POST请求成功'
+	});
+
+
+})
+
+
+// 获取交易链接
+app.post('/unlockCrate', (req, res)=>{
+	csgo.unlockCrate(req.body.boxId, req.body.keyId);
 	res.send({
 		status: 200,
 		data: null,
@@ -147,7 +163,45 @@ app.get('/deleteItem', (req, res)=>{
 
 })
 
+
+// 游戏链接
+app.get('/connectCsgo', (req, res)=>{
+	try{
+		csgo.connectCsgo(req.query.itemId);
+	}catch (error){
+		console.log(error)
+	}
+
+	res.send({
+		status: 200,
+		data: null,
+		message: 'POST请求成功'
+	});
+
+})
+
+
+// 获取交易链接
+app.get('/getCasketContents', (req, res)=>{
+	try{
+		var casketItems = [];
+		csgo.getCasketContents(req.query.casketId, function (items) {
+			for (let i = 0; i < items.length; i++) {
+				casketItems[i] = items[i];
+			}
+		});
+	}catch (error){
+		console.log(error)
+	}
+
+	res.send({
+		status: 200,
+		data: casketItems,
+		message: 'POST请求成功'
+	});
+
+})
 // 启动服务器，并监听端口8080
-app.listen(5000, () => {
+app.listen(5001, () => {
 	console.log('express server running at http://127.0.0.1')
 })

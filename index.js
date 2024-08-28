@@ -34,7 +34,7 @@ function GlobalOffensive(steam) {
 		let isProtobuf = !Buffer.isBuffer(payload);
 		console.log("3-payload ");
 		let newVar = isProtobuf ? JSON.stringify(payload) : ByteBuffer.wrap(payload, ByteBuffer.LITTLE_ENDIAN);
-		console.log(decoder.write(newVar));
+		console.log(newVar);
 		if (appid != STEAM_APPID) {
 			return; // we don't care
 		}
@@ -305,8 +305,8 @@ GlobalOffensive.prototype.nameItem = function(nameTagId, itemId, name) {
 
 GlobalOffensive.prototype.unlockCrate = function(boxId, keyId) {
 	let buffer = new ByteBuffer(18 + Buffer.byteLength(boxId) + Buffer.byteLength(keyId), ByteBuffer.LITTLE_ENDIAN);
-	buffer.writeUint64(boxId);
 	buffer.writeUint64(keyId);
+	buffer.writeUint64(boxId);
 	this._send(Language.UnlockCrate, null, buffer);
 };
 
@@ -315,6 +315,16 @@ GlobalOffensive.prototype.unlockCrate = function(boxId, keyId) {
  * @param {int} itemId
  */
 GlobalOffensive.prototype.deleteItem = function(itemId) {
+	let buffer = new ByteBuffer(8, ByteBuffer.LITTLE_ENDIAN);
+	buffer.writeUint64(itemId);
+	this._send(Language.Delete, null, buffer);
+};
+
+/**
+ * Permanently delete an item from your inventory.
+ * @param {int} itemId
+ */
+GlobalOffensive.prototype.connectCsgo = function(serverAddress, serverPort) {
 	let buffer = new ByteBuffer(8, ByteBuffer.LITTLE_ENDIAN);
 	buffer.writeUint64(itemId);
 	this._send(Language.Delete, null, buffer);
@@ -368,28 +378,27 @@ GlobalOffensive.prototype.removeFromCasket = function(casketId, itemId) {
  */
 GlobalOffensive.prototype.getCasketContents = function(casketId, callback) {
 	// First see if we already have this casket's contents in our inventory
-	let casketItem = this.inventory.find(item => item.id == casketId);
-	if (!casketItem) {
-		callback(new Error(`No casket matching ID ${casketId} was found`));
-		return;
-	}
-
-	if (!casketItem.casket_contained_item_count) {
-		// Casket is empty, I guess
-		callback(null, []);
-		return;
-	}
-
-	let loadedItems = this.inventory.filter(item => item.casket_id == casketId);
-	if (loadedItems.length == casketItem.casket_contained_item_count) {
-		callback(null, loadedItems);
-		return;
-	}
+	// let casketItem = this.inventory.find(item => item.id == casketId);
+	// if (!casketItem) {
+	// 	callback(new Error(`No casket matching ID ${casketId} was found`));
+	// 	return;
+	// }
+	//
+	// if (!casketItem.casket_contained_item_count) {
+	// 	// Casket is empty, I guess
+	// 	callback(null, []);
+	// 	return;
+	// }
+	//
+	// let loadedItems = this.inventory.filter(item => item.casket_id == casketId);
+	// if (loadedItems.length == casketItem.casket_contained_item_count) {
+	// 	callback(null, loadedItems);
+	// 	return;
+	// }
 
 	// We need to load casket contents from the GC
 	this._send(Language.CasketItemLoadContents, Protos.CMsgCasketItem, {
-		casket_item_id: casketId,
-		item_item_id: casketId
+		casket_item_id: casketId
 	});
 
 	// Set a 30 second timeout in case the GC isn't being cooperative
