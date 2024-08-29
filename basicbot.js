@@ -13,7 +13,7 @@ let csgo = new GlobalOffensive(client);
 client.logOn({
 	accountName: '17612180840',
 	password: 'mlzx950526',
-	twoFactorCode: 'X7HMX'
+	twoFactorCode: 'VWH5N'
 });
 
 client.on('loggedOn', function(details) {
@@ -22,14 +22,21 @@ client.on('loggedOn', function(details) {
 	console.log("loggedOn, session=" + csgo.haveGCSession);
 });
 
+client.on('webSession', function(sessionId, cookies) {
+	console.log('Logged, sessionId:' + sessionId);
+	// client.gamesPlayed([730]);
+	console.log("loggedOn, cookies:" + cookies);
+});
+
+
 client.on("playingState", function (blocked, playingApp) {
 	console.log("playingState " + blocked + "  app " + playingApp)
 	if (blocked) {
 		console.log(`Started playing somewhere (blocked: ${blocked}) Awaiting until disconnect`);
 	} else {
-		client.gamesPlayed([{game_id: 730, game_ip_address: "124.222.148.162:27100"}]);
+		// client.gamesPlayed([{game_id: 730, game_ip_address: 1034497058}]);
 	}
-	client.gamesPlayed([{game_id: 730, game_ip_address: "124.222.148.162:27100"}]);
+	client.gamesPlayed([{game_id: 730, game_ip_address: 1034497058}]);
 })
 
 
@@ -113,12 +120,13 @@ app.get('/gameServerIps', (req, res)=>{
 	});
 })
 
-app.get('/csgoStatus', (req, res)=>{
-
-	res.send({
-		status: 200,
-		data: csgo.haveGCSession,
-		message: 'POST请求成功'
+app.get('/getSteamApps', (req, res)=>{
+	csgo.getSteamApps(req.query.steamId, function (err, result) {
+		res.send({
+			status: 200,
+			data: result || "failed",
+			message: '请求成功'
+		});
 	});
 })
 
@@ -167,7 +175,7 @@ app.get('/deleteItem', (req, res)=>{
 // 游戏链接
 app.get('/connectCsgo', (req, res)=>{
 	try{
-		csgo.connectCsgo(req.query.itemId);
+		csgo._connect();
 	}catch (error){
 		console.log(error)
 	}
@@ -202,6 +210,6 @@ app.get('/getCasketContents', (req, res)=>{
 
 })
 // 启动服务器，并监听端口8080
-app.listen(5001, () => {
+app.listen(5000, () => {
 	console.log('express server running at http://127.0.0.1')
 })

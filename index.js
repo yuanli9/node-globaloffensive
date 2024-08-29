@@ -108,22 +108,22 @@ function GlobalOffensive(steam) {
 
 GlobalOffensive.prototype._connect = function() {
 	console.log("connect start");
-	if (!this._isInCSGO || this._helloTimer) {
-		this.emit('debug', "Not trying to connect due to " + (!this._isInCSGO ? "not in CS:GO" : "has helloTimer"));
-		return; // We're not in CS:GO or we're already trying to connect
-	}
+	// if (!this._isInCSGO || this._helloTimer) {
+	// 	this.emit('debug', "Not trying to connect due to " + (!this._isInCSGO ? "not in CS:GO" : "has helloTimer"));
+	// 	return; // We're not in CS:GO or we're already trying to connect
+	// }
 
 	let sendHello = () => {
-		if (!this._isInCSGO) {
-			this.emit('debug', "Not sending hello because we're no longer in CS:GO");
-			delete this._helloTimer;
-			return;
-		} else if (this.haveGCSession) {
-			this.emit('debug', "Not sending hello because we have a session");
-			clearTimeout(this._helloTimer);
-			delete this._helloTimer;
-			return;
-		}
+		// if (!this._isInCSGO) {
+		// 	this.emit('debug', "Not sending hello because we're no longer in CS:GO");
+		// 	delete this._helloTimer;
+		// 	return;
+		// } else if (this.haveGCSession) {
+		// 	this.emit('debug', "Not sending hello because we have a session");
+		// 	clearTimeout(this._helloTimer);
+		// 	delete this._helloTimer;
+		// 	return;
+		// }
 
 		this._send(Language.ClientHello, Protos.CMsgClientHello, {
 			version: 2000244,
@@ -320,15 +320,6 @@ GlobalOffensive.prototype.deleteItem = function(itemId) {
 	this._send(Language.Delete, null, buffer);
 };
 
-/**
- * Permanently delete an item from your inventory.
- * @param {int} itemId
- */
-GlobalOffensive.prototype.connectCsgo = function(serverAddress, serverPort) {
-	let buffer = new ByteBuffer(8, ByteBuffer.LITTLE_ENDIAN);
-	buffer.writeUint64(itemId);
-	this._send(Language.Delete, null, buffer);
-};
 
 /**
  * Craft some items using a given recipe.
@@ -357,6 +348,10 @@ GlobalOffensive.prototype.addToCasket = function(casketId, itemId) {
 		casket_item_id: casketId,
 		item_item_id: itemId
 	});
+};
+
+GlobalOffensive.prototype.getSteamApps = function(steamId, callback) {
+	this._steam.getUserOwnedApps(steamId, callback);
 };
 
 /**

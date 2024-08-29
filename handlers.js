@@ -423,6 +423,11 @@ handlers[Language.ClientGCRankUpdate] = function(body) {
 	console.log("ClientGCRankUpdate " + body);
 };
 
+handlers[Language.ClientHello] = function(body) {
+	console.log("ClientHello " + body);
+};
+
+
 
 handlers[Language.GC2ClientGlobalStats] = function(body) {
 	let str = decoder.write(body.buffer);
@@ -435,3 +440,58 @@ handlers[Language.UnlockCrateResponse] = function(body) {
 	let str = decoder.write(body.buffer);
 	console.log("UnlockCrateResponse " + str);
 };
+
+handlers[Language.GC2ClientInitSystem_Response] = function(body) {
+	let str = decoder.write(body.buffer);
+	console.log("GC2ClientInitSystem_Response " + str);
+};
+
+handlers[Language.ClientGCRankUpdate] = function(body) {
+	let str = decoder.write(body.buffer);
+	console.log("ClientGCRankUpdate " + str);
+};
+
+handlers[Language.Account_RequestCoPlays] = function(body) {
+	let str = decoder.write(body.buffer);
+	console.log("Account_RequestCoPlays " + str);
+};
+
+
+handlers[Language.ClientPollState] = function(body) {
+	let str = decoder.write(body.buffer);
+	console.log("ClientPollState " + str);
+};
+
+
+handlers[Language.FantasyRequestClientData] = function(body) {
+	let str = decoder.write(body.buffer);
+	console.log("FantasyRequestClientData " + str);
+};
+
+
+handlers[Language.GC2ClientGlobalStats] = function(body) {
+	let str = decoder.write(body.buffer);
+	console.log("GC2ClientGlobalStats " + str);
+};
+
+handlers[Language.Client2GCRequestPrestigeCoin] = function(body) {
+	let str = decoder.write(body.buffer);
+	console.log("Client2GCRequestPrestigeCoin " + str);
+};
+
+handlers[Language.GlobalGame_Play] = function(body) {
+	let str = decoder.write(body.buffer);
+	console.log("GlobalGame_Play " + str);
+};
+
+
+handlers[Language.ClientReportServer] = function(body) {
+	let str = decoder.write(body.buffer);
+	console.log("ClientReportServer " + str);
+};
+
+handlers[Language.ServerNotificationForUserPenalty] = function(body) {
+	let str = decoder.write(body.buffer);
+	console.log("ServerNotificationForUserPenalty " + str);
+};
+
